@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>AR 3D Model Viewer</title>
+	<style>
+		body {
+			margin: 0;
+		}
+
+		.example-container {
+			overflow: hidden;
+			position: absolute;
+			width: 100%;
+			height: 100%;
+		}
+
+		#startup {
+			position: fixed;
+			z-index: 10;
+			background-color: rgba(0, 0, 0, 0.8);
+			color: white;
+			text-align: center;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-family: Arial, sans-serif;
+		}
+	</style>
+	<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image.prod.js"></script>
+	<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+</head>
+
+<body>
+	<div id="startup">
+		<div>
+			<h1>Loading...</h1>
+			<p>Please wait while we initialize the AR experience</p>
+		</div>
+	</div>
+
+	<div class="example-container">
+		<a-scene mindar-image="imageTargetSrc: ./targets.mind" embedded color-space="sRGB"
+			renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false"
+			device-orientation-permission-ui="enabled: false">
+
+			<a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+			<a-assets>
+				<a-asset-item id="3d-model" src="shoehouse.glb"></a-asset-item>
+			</a-assets>
+
+			<a-entity mindar-image-target="targetIndex: 0">
+				<a-entity position="1 -1 -1" rotation="0 0 0" scale=".1 .1 .1" gltf-model="#3d-model" animation-mixer>
+				</a-entity>
+
+				<a-light type="ambient" intensity="0.7"></a-light>
+				<a-light type="directional" intensity="0.5" position="1 1 1"></a-light>
+			</a-entity>
+		</a-scene>
+	</div>
+
+	<script>
+		window.addEventListener( 'load', function () {
+			const sceneEl = document.querySelector( 'a-scene' );
+			const startupWrapper = document.querySelector( '#startup' );
+
+			sceneEl.addEventListener( 'renderstart', () => {
+				startupWrapper.style.display = 'none';
+			} );
+		} );
+
+		window.addEventListener( 'error', function ( e ) {
+			console.log( 'Error:', e.error );
+			document.querySelector( '#startup' ).innerHTML = `
+                <div>
+                    <h1>Error</h1>
+                    <p>Please make sure you're using a modern browser with WebAR support.</p>
+                </div>
+            `;
+		} );
+	</script>
+</body>
+
+</html>
